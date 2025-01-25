@@ -59,18 +59,33 @@ xcodebuild -create-xcframework \
   -debug-symbols "${PWD}/$IOS_LOCATION/ios-arm64_i386_x86_64-simulator/dSYMs/MobileVLCKit.framework.dSYM" \
   -framework "$IOS_LOCATION/ios-arm64_armv7_armv7s/MobileVLCKit.framework" \
   -debug-symbols "${PWD}/$IOS_LOCATION/ios-arm64_armv7_armv7s/dSYMs/MobileVLCKit.framework.dSYM" \
-  -output .tmp/VLCKit-all.xcframework
+  -output .tmp/VLCKitFull.xcframework
 
-ditto -c -k --sequesterRsrc --keepParent ".tmp/VLCKit-all.xcframework" ".tmp/VLCKit-all.xcframework.zip"
+ditto -c -k --sequesterRsrc --keepParent ".tmp/VLCKitFull.xcframework" ".tmp/VLCKitFull.xcframework.zip"
 
-#Update package file
-PACKAGE_HASH=$(shasum -a 256 ".tmp/VLCKit-all.xcframework.zip" | awk '{ print $1 }')
+# Update package file
+PACKAGE_HASH=$(shasum -a 256 ".tmp/VLCKitFull.xcframework.zip" | awk '{ print $1 }')
 if [ -z "$PACKAGE_HASH" ]; then
   echo "Error: Failed to calculate the hash of the xcframework"
   exit 1
 fi
-PACKAGE_STRING="Target.binaryTarget(name: \"VLCKit-all\", url: \"https:\/\/github.com\/vvisionnn\/vlckit-spm\/releases\/download\/$TAG_VERSION\/VLCKit-all.xcframework.zip\", checksum: \"$PACKAGE_HASH\")"
-echo "Changing package definition for xcframework with hash $PACKAGE_HASH"
-sed -i '' -e "s/let vlcBinary.*/let vlcBinary = $PACKAGE_STRING/" Package.swift
+
+# Update Package.swift with new checksum and URL
+awk -v tag="$TAG_VERSION" -v hash="$PACKAGE_HASH" '
+/\/\/ GENERATED_START/,/\/\/ GENERATED_END/ {
+  if ($0 ~ /\/\/ GENERATED_START/) {
+    print $0
+    print "let vlcBinary = Target.binaryTarget("
+    print "\tname: \"VLCKitFull\","
+    print "\turl: \"https://github.com/vvisionnn/swift-vlc/releases/download/" tag "/VLCKitFull.xcframework.zip\","
+    print "\tchecksum: \"" hash "\""
+    print ")"
+  } else if ($0 ~ /\/\/ GENERATED_END/) {
+    print $0
+  }
+  next
+}
+{ print $0 }
+' Package.swift >Package.swift.tmp && mv Package.swift.tmp Package.swift
 
 cp -f .tmp/MobileVLCKit-binary/COPYING.txt ./LICENSE
