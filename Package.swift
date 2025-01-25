@@ -6,8 +6,8 @@ import PackageDescription
 // GENERATED_START
 let vlcBinary = Target.binaryTarget(
 	name: "VLCKitFull",
-	url: "https://github.com/vvisionnn/swift-vlc/releases/download/3.5.1/VLCKitFull.xcframework.zip",
-	checksum: "a27b8de4c9d7ea2b41b0b59ef6b3d97a729ff3d2884334a7162ab3c3fa8f8ef3"
+	url: "https://github.com/vvisionnn/swift-vlc/releases/download/3.6.0/VLCKitFull.xcframework.zip",
+	checksum: "fbd226a5d2e30bc5ccbbc6e38f3c802018175b4a1569f62fef0865f228e39b13"
 )
 // GENERATED_END
 
