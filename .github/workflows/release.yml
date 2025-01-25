@@ -70,7 +70,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: .tmp/VLCKit-all.xcframework.zip
+          files: .tmp/VLCKitFull.xcframework.zip
           tag_name: ${{ github.event.inputs.tag_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
