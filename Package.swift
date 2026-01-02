@@ -13,7 +13,11 @@ let vlcBinary = Target.binaryTarget(
 
 let package = Package(
 	name: "swift-vlc",
-	platforms: [.macOS(.v10_13), .iOS(.v11), .tvOS(.v11)],
+	platforms: [
+		.macOS(.v10_14),
+		.iOS(.v12),
+		.tvOS(.v12)
+	],
 	products: [
 		.library(name: "SwiftVLC", targets: ["SwiftVLC"]),
 	],
